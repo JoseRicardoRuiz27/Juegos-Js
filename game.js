@@ -1,4 +1,5 @@
 import { animacionesCreadas } from "./animations.js"
+import { movimientosMario } from "./controles.js"
 
 /* Phaser es una global */
 const config = {
@@ -41,6 +42,8 @@ function preload(){
         `assets/entities/mario.png`,
         {frameWidth: 18, frameHeight: 16}
     )
+    
+
     this.load.audio(
         `gameover`,
         `assets/sound/music/gameover.mp3`
@@ -88,42 +91,21 @@ function create (){
 
 function update(){ 
     //como se comportara mario segun las teclas precionadas
-    const {keys, mario} = this
-    const isMarioTouchingFloor = mario.body.touching.down
-    const isLeftKeyDown = keys.left.isDown
-    const isRightKeyDown = keys.right.isDown
-    const isUpKeyDown = keys.up.isDown
+    movimientosMario(this) 
+    const {mario, sound, scene} = this
 
-    if(mario.isDead) return
-    
-    if (isLeftKeyDown) {
-        mario.x -=2
-        isMarioTouchingFloor && mario.anims.play(`mario-corriendo`, true)
-        mario.flipX = true
-    } else if (isRightKeyDown) {
-        mario.x +=2
-        isMarioTouchingFloor && mario.anims.play(`mario-corriendo`, true)
-        mario.flipX = false
-    } else if(isMarioTouchingFloor) {
-        mario.anims.play(`mario-quieto`, true)
-    }
-
-    if (isUpKeyDown  && isMarioTouchingFloor) {
-        mario.setVelocityY(-300)
-        mario.anims.play(`mario-salto`, true)
-    }
-
-    if (this.mario.y >= config.height) {
-        this.mario.isDead = true
-        this.mario.anims.play(`mario-muerto`)
-        this.mario.setCollideWorldBounds(false)
-        this.sound.add(`gameover`, {volume: .2}).play()
-        setTimeout(() =>{
-            this.mario.setVelocityY(-320)
+    if (mario.y >= config.height) {
+        mario.isDead = true
+        mario.anims.play(`mario-muerto`)
+        mario.setCollideWorldBounds(false)
+        sound.add(`gameover`, {volume: 0.2}).play()
+        
+       setTimeout(() =>{
+            mario.setVelocityY(-320)
             // animacion de muerte
         }, 100)
         setTimeout(() => {
-            this.scene.restart()
+            scene.restart()
             // reseteamos el juego
         }, 2000);
     }
