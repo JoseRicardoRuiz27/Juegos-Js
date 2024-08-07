@@ -42,7 +42,11 @@ function preload(){
         `assets/entities/mario.png`,
         {frameWidth: 18, frameHeight: 16}
     )
-    
+    this.load.spritesheet(
+        `goomba`,
+        `assets/entities/overworld/goomba.png`,
+        {frameWidth:16, frameHeight: 16}
+    )
 
     this.load.audio(
         `gameover`,
@@ -73,10 +77,15 @@ function create (){
     .setOrigin(0, 1)
     .setCollideWorldBounds(true) //evitamos el personaje salga de la pantalla
     .setGravityY(300)
-
+    this.enemy = this.physics.add.sprite(120, config.height -30, `goomba`)
+    .setOrigin(0, 1)
+    .setGravityY(300)
+    .setVelocityX(-50)
+    
     //le asignamos una configuracion al mundo de donde empieza y donde termina en el width y height
     this.physics.world.setBounds(0, 0, 2000, config.height)
     this.physics.add.collider(this.mario, this.floor) //aqui mezclamos las fisicas de mario y el suelo
+    this.physics.add.collider(this.enemy, this.floor)
 
     //le decimos que la camara siga a mario
     this.cameras.main.setBounds(0, 0, 2000, config.height)
