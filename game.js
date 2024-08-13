@@ -77,6 +77,7 @@ function create (){
     .setOrigin(0, 1)
     .setCollideWorldBounds(true) //evitamos el personaje salga de la pantalla
     .setGravityY(300)
+
     this.enemy = this.physics.add.sprite(120, config.height -30, `goomba`)
     .setOrigin(0, 1)
     .setGravityY(300)
@@ -86,16 +87,30 @@ function create (){
     this.physics.world.setBounds(0, 0, 2000, config.height)
     this.physics.add.collider(this.mario, this.floor) //aqui mezclamos las fisicas de mario y el suelo
     this.physics.add.collider(this.enemy, this.floor)
+    this.physics.add.collider(this.mario, this.enemy,
+        onHitEnemy)
 
     //le decimos que la camara siga a mario
     this.cameras.main.setBounds(0, 0, 2000, config.height)
     this.cameras.main.startFollow(this.mario)
 
     animacionesCreadas(this)
-    
+    this.enemy.anims.play('goomba-caminando', true)
     //creamos el this para luego cargar los botones en el juego
     this.keys = this.input.keyboard.createCursorKeys()
 
+}
+function onHitEnemy(mario, enemy){
+    if(mario.body.touching.down && enemy.body.touching.up){
+        enemy.anims.play(`goomba-muerto`, true)
+        enemy.setVelocityX(0)
+        mario.setVelocityY(-150)
+        setTimeout(() => {
+        enemy.destroy()
+        }, 500)
+    }else{
+
+    }
 }
 
 function update(){ 
