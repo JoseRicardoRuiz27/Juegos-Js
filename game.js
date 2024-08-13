@@ -1,4 +1,5 @@
 import { animacionesCreadas } from "./animations.js"
+import { initAudio, playAudio } from "./audios.js"
 import { movimientosMario } from "./controles.js"
 
 /* Phaser es una global */
@@ -48,10 +49,7 @@ function preload(){
         {frameWidth:16, frameHeight: 16}
     )
 
-    this.load.audio(
-        `gameover`,
-        `assets/sound/music/gameover.mp3`
-    )
+    initAudio(this)
 }
 
 function create (){
@@ -88,7 +86,7 @@ function create (){
     this.physics.add.collider(this.mario, this.floor) //aqui mezclamos las fisicas de mario y el suelo
     this.physics.add.collider(this.enemy, this.floor)
     this.physics.add.collider(this.mario, this.enemy,
-        onHitEnemy)
+        onHitEnemy, null, this)
 
     //le decimos que la camara siga a mario
     this.cameras.main.setBounds(0, 0, 2000, config.height)
@@ -105,6 +103,7 @@ function onHitEnemy(mario, enemy){
         enemy.anims.play(`goomba-muerto`, true)
         enemy.setVelocityX(0)
         mario.setVelocityY(-150)
+        playAudio(`goomba-stomp`, this)
         setTimeout(() => {
         enemy.destroy()
         }, 500)
@@ -116,14 +115,17 @@ function onHitEnemy(mario, enemy){
 function update(){ 
     //como se comportara mario segun las teclas precionadas
     movimientosMario(this) 
-    const {mario, sound, scene} = this
+    const {mario, scene} = this
 
     if (mario.y >= config.height) {
         mario.isDead = true
         mario.anims.play(`mario-muerto`)
         mario.setCollideWorldBounds(false)
-        sound.add(`gameover`, {volume: 0.2}).play()
-        
+        try {
+            playAudio(`gameover`, this)            
+        } catch (e) {
+            console.log(e)
+        }
        setTimeout(() =>{
             mario.setVelocityY(-320)
             // animacion de muerte
