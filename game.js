@@ -1,6 +1,7 @@
 import { animacionesCreadas } from "./animations.js"
 import { initAudio, playAudio } from "./audios.js"
 import { movimientosMario } from "./controles.js"
+import { spritesheet } from "./spritesheet.js"
 
 /* Phaser es una global */
 const config = {
@@ -37,22 +38,14 @@ function preload(){
         `floorbricks`,
         `assets/scenery/overworld/floorbricks.png`
     )
-    //para cargar sprites
-    this.load.spritesheet(
-        `mario`,
-        `assets/entities/mario.png`,
-        {frameWidth: 18, frameHeight: 16}
-    )
-    this.load.spritesheet(
-        `goomba`,
-        `assets/entities/overworld/goomba.png`,
-        {frameWidth:16, frameHeight: 16}
-    )
+    
+    spritesheet(this)
 
     initAudio(this)
 }
 
 function create (){
+    animacionesCreadas(this)
 
     //cargamos la imagen de la nube que antes generamos
     this.add.image(100, 50, 'cloud1')
@@ -80,7 +73,13 @@ function create (){
     .setOrigin(0, 1)
     .setGravityY(300)
     .setVelocityX(-50)
-    
+    this.enemy.anims.play('goomba-caminando', true)
+   
+    this.coin = this.physics.add.staticGroup()
+    this.coin.create(120, 130, `coin`).anims.play(`coin-aparece`, true)
+    this.coin.create(220, 130, `coin`).anims.play(`coin-aparece`, true)
+
+
     //le asignamos una configuracion al mundo de donde empieza y donde termina en el width y height
     this.physics.world.setBounds(0, 0, 2000, config.height)
     this.physics.add.collider(this.mario, this.floor) //aqui mezclamos las fisicas de mario y el suelo
@@ -92,8 +91,9 @@ function create (){
     this.cameras.main.setBounds(0, 0, 2000, config.height)
     this.cameras.main.startFollow(this.mario)
 
-    animacionesCreadas(this)
-    this.enemy.anims.play('goomba-caminando', true)
+    
+
+
     //creamos el this para luego cargar los botones en el juego
     this.keys = this.input.keyboard.createCursorKeys()
 
@@ -104,6 +104,7 @@ function onHitEnemy(mario, enemy){
         enemy.setVelocityX(0)
         mario.setVelocityY(-150)
         playAudio(`goomba-stomp`, this)
+
         setTimeout(() => {
         enemy.destroy()
         }, 500)
@@ -122,15 +123,15 @@ function update(){
     }
 }
 
-function killMario (game) {
+function killMario(game) {
     const {mario, scene} = game
-
     if(mario.isDead) return
 
     mario.isDead = true
-    mario.anims.play(`mario-muerto`)
+    mario.anims.play(`mario-muerto`, true)
     mario.setCollideWorldBounds(false)
-    playAudio(`gameover`, game, {volumw: .2})
+
+    playAudio(`gameover`, game, {volume: .2})
     mario.body.checkCollision.none = true
     mario.setVelocityX(0)
 
