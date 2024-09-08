@@ -78,7 +78,7 @@ function create (){
     this.coin = this.physics.add.staticGroup()
     this.coin.create(120, 130, `coin`).anims.play(`coin-aparece`, true)
     this.coin.create(220, 130, `coin`).anims.play(`coin-aparece`, true)
-
+    this.physics.add.overlap(this.mario, this.coin, collectCoin, null, this)
 
     //le asignamos una configuracion al mundo de donde empieza y donde termina en el width y height
     this.physics.world.setBounds(0, 0, 2000, config.height)
@@ -91,13 +91,16 @@ function create (){
     this.cameras.main.setBounds(0, 0, 2000, config.height)
     this.cameras.main.startFollow(this.mario)
 
-    
-
-
     //creamos el this para luego cargar los botones en el juego
     this.keys = this.input.keyboard.createCursorKeys()
 
 }
+
+function collectCoin(mario,  coin){ 
+    coin.destroy()
+    playAudio(`coin-pickup`, this, {volume: .1})
+}
+
 function onHitEnemy(mario, enemy){
     if(mario.body.touching.down && enemy.body.touching.up){
         enemy.anims.play(`goomba-muerto`, true)
