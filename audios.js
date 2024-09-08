@@ -18,7 +18,7 @@ export const initAudio = ({load}) =>{
         load.audio(key, path)
     })
 } 
-export const playAudio = (id, {sound}, {volume = 1} = {}) => {
+export const playAudio = (id, {sound}, {volume = .5} = {}) => {
     try {
         return sound.add(id, {volume}).play()
     } catch (e) {

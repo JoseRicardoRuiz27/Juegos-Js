@@ -38,6 +38,10 @@ function preload(){
         `floorbricks`,
         `assets/scenery/overworld/floorbricks.png`
     )
+    this.load.image(
+        'supermushroom',
+        `assets/collectibles/super-mushroom.png`
+    )
     
     spritesheet(this)
 
@@ -75,10 +79,11 @@ function create (){
     .setVelocityX(-50)
     this.enemy.anims.play('goomba-caminando', true)
    
-    this.coin = this.physics.add.staticGroup()
-    this.coin.create(120, 130, `coin`).anims.play(`coin-aparece`, true)
-    this.coin.create(220, 130, `coin`).anims.play(`coin-aparece`, true)
-    this.physics.add.overlap(this.mario, this.coin, collectCoin, null, this)
+    this.collectibes = this.physics.add.staticGroup()
+    this.collectibes.create(120, 130, `coin`).anims.play(`coin-aparece`, true)
+    this.collectibes.create(220, 130, `coin`).anims.play(`coin-aparece`, true)
+    this.collectibes.create(200, config.height -40, `supermushroom`).anims.play(`supermushroom-idle`, true)
+    this.physics.add.overlap(this.mario, this.collectibes, collectItem, null, this)
 
     //le asignamos una configuracion al mundo de donde empieza y donde termina en el width y height
     this.physics.world.setBounds(0, 0, 2000, config.height)
@@ -96,10 +101,19 @@ function create (){
 
 }
 
-function collectCoin(mario,  coin){ 
-    coin.destroy()
-    playAudio(`coin-pickup`, this, {volume: .1})   
-    addToScore(100, coin, this)
+function collectItem(mario,  item){ 
+    const {texture : {key}} = item
+        item.destroy()
+    if(key === `coin`) {
+        playAudio(`coin-pickup`, this, {volume: .1})   
+        addToScore(100, item, this)
+    } else if(key === `supermushroom`) {
+        this.physics.world.pause()
+        this.anims.pauseAll()
+
+        mario.isGrown = true
+        mario.anims.play(`mario-grande-idle`, true)
+    }
 }
 
 function addToScore(scoreToAdd, origin, game){
@@ -110,7 +124,7 @@ function addToScore(scoreToAdd, origin, game){
     scoreToAdd,
     {
         fontFamily: `pixel`,
-        fontSize: config.width / 50,
+        fontSize: config.width / 75,
     }
 )
 game.tweens.add({
@@ -151,9 +165,7 @@ function update(){
 
 function killMario(game) {
     const {mario, scene} = game
-    if(mario.isDead) return
 
-    mario.isDead = true
     mario.anims.play(`mario-muerto`, true)
     mario.setCollideWorldBounds(false)
 

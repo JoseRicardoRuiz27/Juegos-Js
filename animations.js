@@ -12,6 +12,10 @@ export const animacionesCreadas = (game) =>{
         frames: [{key: `mario`, frame: 0}]
     })
     game.anims.create({
+        key: `mario-grande-idle`,
+        frames: [{key: `mario-grande`, frame: 0}]
+    })
+    game.anims.create({
         key: `mario-salto`,
         frames: [{key: `mario`, frame: 5}]
     })
