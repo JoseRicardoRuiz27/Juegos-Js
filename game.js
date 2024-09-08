@@ -98,7 +98,29 @@ function create (){
 
 function collectCoin(mario,  coin){ 
     coin.destroy()
-    playAudio(`coin-pickup`, this, {volume: .1})
+    playAudio(`coin-pickup`, this, {volume: .1})   
+    addToScore(100, coin, this)
+}
+
+function addToScore(scoreToAdd, origin, game){
+ //Mostramos un mensaje de coins con la fuente cargada en el html
+ const coinText = game.add.text(
+    origin.getBounds().x,
+    origin.getBounds().y,
+    scoreToAdd,
+    {
+        fontFamily: `pixel`,
+        fontSize: config.width / 50,
+    }
+)
+game.tweens.add({
+    targets: coinText,
+    duration: 500,
+    y: coinText.y -10,
+    onComplete: () => {
+        coinText.destroy()
+    }
+})   
 }
 
 function onHitEnemy(mario, enemy){
@@ -107,6 +129,7 @@ function onHitEnemy(mario, enemy){
         enemy.setVelocityX(0)
         mario.setVelocityY(-150)
         playAudio(`goomba-stomp`, this)
+        addToScore(100, enemy, this)
 
         setTimeout(() => {
         enemy.destroy()
