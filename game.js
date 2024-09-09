@@ -111,8 +111,26 @@ function collectItem(mario,  item){
         this.physics.world.pause()
         this.anims.pauseAll()
 
-        mario.isGrown = true
+
         mario.anims.play(`mario-grande-idle`, true)
+        playAudio(`powerup`, this, {volume: .1})
+        let i = 0;
+        const interval = setInterval(() => {
+            i++
+            mario.anims.play(i % 2 === 0 ? 'mario-grande-idle' : 'mario-quieto')
+        }, 100)
+
+        mario.isBlocked = true
+        mario.isGrown = true
+
+        setTimeout(() => {
+        mario.isBlocked = false
+        mario.setDisplaySize(18, 32)
+        mario.body.setSize(18, 32)
+        clearInterval(interval)
+        this.physics.world.resume()
+        this.anims.resumeAll()
+        }, 1000);
     }
 }
 

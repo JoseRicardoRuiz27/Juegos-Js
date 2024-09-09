@@ -18,7 +18,8 @@ export function movimientosMario ({keys, mario}){
     const isUpKeyDown = keys.up.isDown
     
     if(mario.isDead) return
-
+    if(mario.isBlocked) return
+    
     const marioAnims = mario.isGrown ? MARIO_ANIMS.grown : MARIO_ANIMS.normal
 
     if (isLeftKeyDown) {
